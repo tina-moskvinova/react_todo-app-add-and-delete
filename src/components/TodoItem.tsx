@@ -5,10 +5,10 @@ import { Todo } from '../types/Todo';
 type Props = {
   todo: Todo;
   onDelete?: (todoId: number) => void;
-  loader?: boolean;
+  isProcessed?: boolean;
 };
 
-export const TodoItem: React.FC<Props> = ({ todo, onDelete, loader }) => {
+export const TodoItem: React.FC<Props> = ({ todo, onDelete, isProcessed }) => {
   return (
     <div data-cy="Todo" className={`todo${todo.completed ? ' completed' : ''}`}>
       <label className="todo__status-label">
@@ -25,12 +25,16 @@ export const TodoItem: React.FC<Props> = ({ todo, onDelete, loader }) => {
         {todo.title}
       </span>
 
-      {loader ? (
-        <div data-cy="TodoLoader" className="modal overlay is-active">
-          <div className="modal-background has-background-white-ter" />
-          <div className="loader" />
-        </div>
-      ) : (
+      {/* loader or delete button */}
+      <div
+        data-cy="TodoLoader"
+        className={`todo__loader${isProcessed ? ' is-active' : ''}`}
+      >
+        <div className="modal-background has-background-white-ter" />
+        <div className="loader" />
+      </div>
+
+      {!isProcessed && (
         <button
           type="button"
           className="todo__remove"

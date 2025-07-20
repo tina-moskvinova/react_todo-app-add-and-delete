@@ -167,7 +167,7 @@ export const App: React.FC = () => {
               loadingTodoIds={loadingTodoIds}
             />
 
-            {tempTodo && <TodoItem todo={tempTodo} loader />}
+            {tempTodo && <TodoItem todo={tempTodo} isProcessed={true} />}
           </>
         )}
 

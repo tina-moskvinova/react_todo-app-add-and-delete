@@ -24,7 +24,7 @@ export const TodoList: React.FC<Props> = ({
           key={todo.id}
           todo={todo}
           onDelete={onDelete}
-          loader={loadingTodoIds.includes(todo.id)}
+          isProcessed={loadingTodoIds.includes(todo.id)}
         />
       ))}
     </section>
