@@ -3,8 +3,8 @@ import { Todo } from '../types/Todo';
 
 export const USER_ID = 3257;
 
-export const getTodos = () => {
-  return client.get<Todo[]>(`/todos?userId=${USER_ID}`);
+export const getTodos = (userId: number) => {
+  return client.get<Todo[]>(`/todos?userId=${userId}`);
 };
 
 export const addTodoToServer = (title: string, userId: number) => {

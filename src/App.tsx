@@ -39,7 +39,7 @@ export const App: React.FC = () => {
       setErrorMessage('');
 
       try {
-        const todosFromServer = await getTodos();
+        const todosFromServer = await getTodos(USER_ID);
 
         setTodos(todosFromServer);
       } catch {
@@ -68,6 +68,25 @@ export const App: React.FC = () => {
     setVisibleTodos(filtered);
   }, [todos, statusFilter]);
 
+  const reloadTodos = async () => {
+    setIsLoading(true);
+    setErrorMessage('');
+
+    try {
+      const todosFromServer = await getTodos(USER_ID);
+
+      setTodos(todosFromServer);
+    } catch {
+      setErrorMessage(ErrorMessage.LoadTodos);
+    } finally {
+      setIsLoading(false);
+
+      setTimeout(() => {
+        setErrorMessage('');
+      }, 3000);
+    }
+  };
+
   const handleFilterChange = (filter: 'all' | 'active' | 'completed') => {
     setStatusFilter(filter);
   };
@@ -92,12 +111,11 @@ export const App: React.FC = () => {
 
     setTempTodo(temp);
     setErrorMessage('');
+    setNewTodoTitle('');
 
     try {
-      const createdTodo = await addTodoToServer(trimmedTittle, USER_ID);
-
-      setTodos(prev => [...prev, createdTodo]);
-      setNewTodoTitle('');
+      await addTodoToServer(trimmedTittle, USER_ID);
+      await reloadTodos();
     } catch {
       setErrorMessage(ErrorMessage.AddTodo);
       setNewTodoTitle(trimmedTittle);
@@ -147,8 +165,14 @@ export const App: React.FC = () => {
   return (
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
-
       <div className="todoapp__content">
+        {errorMessage && (
+          <ErrorNotification
+            message={errorMessage}
+            onClose={() => setErrorMessage('')}
+          />
+        )}
+
         <Header
           newTodoTitle={newTodoTitle}
           setNewTodoTitle={setNewTodoTitle}
@@ -161,13 +185,17 @@ export const App: React.FC = () => {
           <div className="loader" data-cy="Loader" />
         ) : (
           <>
-            <TodoList
-              todos={visibleTodos}
-              onDelete={handleDelete}
-              loadingTodoIds={loadingTodoIds}
-            />
+            {todos.length > 0 && (
+              <>
+                <TodoList
+                  todos={visibleTodos}
+                  onDelete={handleDelete}
+                  loadingTodoIds={loadingTodoIds}
+                />
 
-            {tempTodo && <TodoItem todo={tempTodo} isProcessed={true} />}
+                {tempTodo && <TodoItem todo={tempTodo} isProcessed={true} />}
+              </>
+            )}
           </>
         )}
 
@@ -180,11 +208,6 @@ export const App: React.FC = () => {
             onClearCompleted={handleClearCompleted}
           />
         )}
-
-        <ErrorNotification
-          message={errorMessage}
-          onClose={() => setErrorMessage('')}
-        />
       </div>
     </div>
   );
