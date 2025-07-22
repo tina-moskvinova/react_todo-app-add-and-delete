@@ -95,9 +95,9 @@ export const App: React.FC = () => {
   const handleAddTodo = async (event: React.FormEvent) => {
     event.preventDefault();
 
-    const trimmedTittle = newTodoTitle.trim();
+    const trimmedTitle = newTodoTitle.trim();
 
-    if (!trimmedTittle) {
+    if (!trimmedTitle) {
       setErrorMessage(ErrorMessage.EmptyTitle);
 
       return;
@@ -106,20 +106,20 @@ export const App: React.FC = () => {
     const temp = {
       id: 0,
       userId: USER_ID,
-      title: trimmedTittle,
+      title: trimmedTitle,
       completed: false,
     };
 
     setTempTodo(temp);
     setErrorMessage('');
-    setNewTodoTitle('');
 
     try {
-      await addTodoToServer(trimmedTittle, USER_ID);
+      await addTodoToServer(trimmedTitle, USER_ID);
       await reloadTodos();
+      setNewTodoTitle('');
     } catch {
       setErrorMessage(ErrorMessage.AddTodo);
-      setNewTodoTitle(trimmedTittle);
+      setNewTodoTitle(trimmedTitle);
     } finally {
       setTempTodo(null);
     }
@@ -227,12 +227,12 @@ export const App: React.FC = () => {
             onClearCompleted={handleClearCompleted}
           />
         )}
-
-        <ErrorNotification
-          message={errorMessage}
-          onClose={() => setErrorMessage('')}
-        />
       </div>
+
+      <ErrorNotification
+        message={errorMessage}
+        onClose={() => setErrorMessage('')}
+      />
     </div>
   );
 };
