@@ -228,12 +228,10 @@ export const App: React.FC = () => {
           />
         )}
 
-        {errorMessage && (
-          <ErrorNotification
-            message={errorMessage}
-            onClose={() => setErrorMessage('')}
-          />
-        )}
+        <ErrorNotification
+          message={errorMessage}
+          onClose={() => setErrorMessage('')}
+        />
       </div>
     </div>
   );
