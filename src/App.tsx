@@ -69,25 +69,6 @@ export const App: React.FC = () => {
     setVisibleTodos(filtered);
   }, [todos, statusFilter]);
 
-  const reloadTodos = async () => {
-    setIsLoading(true);
-    setErrorMessage('');
-
-    try {
-      const todosFromServer = await getTodos(USER_ID);
-
-      setTodos(todosFromServer);
-    } catch {
-      setErrorMessage(ErrorMessage.LoadTodos);
-    } finally {
-      setIsLoading(false);
-
-      setTimeout(() => {
-        setErrorMessage('');
-      }, 3000);
-    }
-  };
-
   const handleFilterChange = (filter: 'all' | 'active' | 'completed') => {
     setStatusFilter(filter);
   };
@@ -114,8 +95,13 @@ export const App: React.FC = () => {
     setErrorMessage('');
 
     try {
-      await addTodoToServer(trimmedTitle, USER_ID);
-      await reloadTodos();
+      const response = await addTodoToServer(trimmedTitle, USER_ID);
+      const cleanTodo = {
+        ...response,
+        title: trimmedTitle,
+      };
+
+      setTodos(prev => [...prev, cleanTodo]);
       setNewTodoTitle('');
     } catch {
       setErrorMessage(ErrorMessage.AddTodo);
