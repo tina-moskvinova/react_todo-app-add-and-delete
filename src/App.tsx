@@ -10,6 +10,7 @@ import {
   addTodoToServer,
   deleteTodoFromServer,
   USER_ID,
+  updateTodoStatus,
 } from './api/todos';
 import { Header } from './components/Header';
 import { TodoList } from './components/TodoList';
@@ -156,6 +157,23 @@ export const App: React.FC = () => {
     );
   };
 
+  const handleStatusChange = async (todoId: number, newStatus: boolean) => {
+    setLoadingTodoIds(prev => [...prev, todoId]);
+
+    try {
+      await updateTodoStatus(todoId, newStatus);
+      setTodos(prev =>
+        prev.map(todo =>
+          todo.id === todoId ? { ...todo, completed: newStatus } : todo,
+        ),
+      );
+    } catch {
+      setErrorMessage(ErrorMessage.UpdateTodo);
+    } finally {
+      setLoadingTodoIds(prev => prev.filter(id => id !== todoId));
+    }
+  };
+
   if (!USER_ID) {
     return <UserWarning />;
   }
@@ -166,13 +184,6 @@ export const App: React.FC = () => {
     <div className="todoapp">
       <h1 className="todoapp__title">todos</h1>
       <div className="todoapp__content">
-        {errorMessage && (
-          <ErrorNotification
-            message={errorMessage}
-            onClose={() => setErrorMessage('')}
-          />
-        )}
-
         <Header
           newTodoTitle={newTodoTitle}
           setNewTodoTitle={setNewTodoTitle}
@@ -191,9 +202,17 @@ export const App: React.FC = () => {
                   todos={visibleTodos}
                   onDelete={handleDelete}
                   loadingTodoIds={loadingTodoIds}
+                  onStatusChange={handleStatusChange}
                 />
 
-                {tempTodo && <TodoItem todo={tempTodo} isProcessed={true} />}
+                {tempTodo && (
+                  <TodoItem
+                    todo={tempTodo}
+                    isProcessed={true}
+                    onDelete={handleDelete}
+                    onStatusChange={handleStatusChange}
+                  />
+                )}
               </>
             )}
           </>
@@ -206,6 +225,13 @@ export const App: React.FC = () => {
             activeCount={todos.filter(todo => !todo.completed).length}
             completedCount={completedCount}
             onClearCompleted={handleClearCompleted}
+          />
+        )}
+
+        {errorMessage && (
+          <ErrorNotification
+            message={errorMessage}
+            onClose={() => setErrorMessage('')}
           />
         )}
       </div>

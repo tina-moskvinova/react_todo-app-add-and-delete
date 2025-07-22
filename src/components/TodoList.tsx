@@ -6,12 +6,14 @@ type Props = {
   todos: Todo[];
   onDelete: (todoId: number) => void;
   loadingTodoIds: number[];
+  onStatusChange: (todoId: number, newStatus: boolean) => void;
 };
 
 export const TodoList: React.FC<Props> = ({
   todos,
   onDelete,
   loadingTodoIds,
+  onStatusChange,
 }) => {
   if (todos.length === 0) {
     return null;
@@ -25,6 +27,7 @@ export const TodoList: React.FC<Props> = ({
           todo={todo}
           onDelete={onDelete}
           isProcessed={loadingTodoIds.includes(todo.id)}
+          onStatusChange={onStatusChange}
         />
       ))}
     </section>

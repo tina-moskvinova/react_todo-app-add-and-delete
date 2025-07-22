@@ -6,9 +6,20 @@ type Props = {
   todo: Todo;
   onDelete?: (todoId: number) => void;
   isProcessed?: boolean;
+  onStatusChange?: (todoId: number, newStatus: boolean) => void;
+  isLoading?: boolean;
 };
 
-export const TodoItem: React.FC<Props> = ({ todo, onDelete, isProcessed }) => {
+export const TodoItem: React.FC<Props> = ({
+  todo,
+  onDelete,
+  isProcessed,
+  onStatusChange,
+}) => {
+  const handleEdit = () => {
+    onStatusChange?.(todo.id, !todo.completed);
+  };
+
   return (
     <div data-cy="Todo" className={`todo${todo.completed ? ' completed' : ''}`}>
       <label className="todo__status-label">
@@ -17,7 +28,7 @@ export const TodoItem: React.FC<Props> = ({ todo, onDelete, isProcessed }) => {
           type="checkbox"
           className="todo__status"
           checked={todo.completed}
-          disabled
+          onChange={handleEdit}
         />
       </label>
 
@@ -28,7 +39,7 @@ export const TodoItem: React.FC<Props> = ({ todo, onDelete, isProcessed }) => {
       {/* loader or delete button */}
       <div
         data-cy="TodoLoader"
-        className={`todo__loader${isProcessed ? ' is-active' : ''}`}
+        className={`modal overlay${isProcessed ? ' is-active' : ''}`}
       >
         <div className="modal-background has-background-white-ter" />
         <div className="loader" />
