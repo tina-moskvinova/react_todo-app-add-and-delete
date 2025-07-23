@@ -4,6 +4,7 @@ import React from 'react';
 import { useEffect, useState } from 'react';
 import { Todo } from './types/Todo';
 import { ErrorMessage } from './types/ErrorMessage';
+import { StatusFilter } from './types/StatusFilter';
 import { ErrorNotification } from './components/ErrorNotification';
 import {
   getTodos,
@@ -18,14 +19,14 @@ import { Footer } from './components/Footer';
 import { UserWarning } from './UserWarning';
 import { TodoItem } from './components/TodoItem';
 
-type StatusFilter = 'all' | 'active' | 'completed';
-
 export const App: React.FC = () => {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [visibleTodos, setVisibleTodos] = useState<Todo[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<ErrorMessage | ''>('');
-  const [statusFilter, setStatusFilter] = useState<StatusFilter>('all');
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>(
+    StatusFilter.All,
+  );
   const [newTodoTitle, setNewTodoTitle] = useState('');
   const [tempTodo, setTempTodo] = useState<Todo | null>(null);
   const [loadingTodoIds, setLoadingTodoIds] = useState<number[]>([]);
@@ -60,7 +61,7 @@ export const App: React.FC = () => {
   useEffect(() => {
     let filtered = [...todos];
 
-    if (statusFilter === 'active') {
+    if (statusFilter === StatusFilter.Active) {
       filtered = filtered.filter(todo => !todo.completed);
     } else if (statusFilter === 'completed') {
       filtered = filtered.filter(todo => todo.completed);
@@ -69,7 +70,7 @@ export const App: React.FC = () => {
     setVisibleTodos(filtered);
   }, [todos, statusFilter]);
 
-  const handleFilterChange = (filter: 'all' | 'active' | 'completed') => {
+  const handleFilterChange = (filter: StatusFilter) => {
     setStatusFilter(filter);
   };
 

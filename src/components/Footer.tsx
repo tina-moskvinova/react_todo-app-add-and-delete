@@ -1,11 +1,19 @@
 import React from 'react';
+import classNames from 'classnames';
+import { StatusFilter } from '../types/StatusFilter';
 
 type Props = {
-  statusFilter: 'all' | 'active' | 'completed';
-  onFilterChange: (filter: 'all' | 'active' | 'completed') => void;
+  statusFilter: StatusFilter;
+  onFilterChange: (filter: StatusFilter) => void;
   activeCount: number;
   completedCount: number;
   onClearCompleted: () => void;
+};
+
+const filterLabels: Record<StatusFilter, string> = {
+  [StatusFilter.All]: 'All',
+  [StatusFilter.Active]: 'Active',
+  [StatusFilter.Completed]: 'Completed',
 };
 
 export const Footer: React.FC<Props> = ({
@@ -22,30 +30,19 @@ export const Footer: React.FC<Props> = ({
       </span>
 
       <nav className="filter" data-cy="Filter">
-        <a
-          href="#/"
-          className={`filter__link ${statusFilter === 'all' ? 'selected' : ''}`}
-          data-cy="FilterLinkAll"
-          onClick={() => onFilterChange('all')}
-        >
-          All
-        </a>
-        <a
-          href="#/active"
-          className={`filter__link ${statusFilter === 'active' ? 'selected' : ''}`}
-          data-cy="FilterLinkActive"
-          onClick={() => onFilterChange('active')}
-        >
-          Active
-        </a>
-        <a
-          href="#/completed"
-          className={`filter__link ${statusFilter === 'completed' ? 'selected' : ''}`}
-          data-cy="FilterLinkCompleted"
-          onClick={() => onFilterChange('completed')}
-        >
-          Completed
-        </a>
+        {Object.values(StatusFilter).map(filter => (
+          <a
+            key={filter}
+            href={`#/${filter}`}
+            className={classNames('filter__link', {
+              selected: statusFilter === filter,
+            })}
+            data-cy={`FilterLink${filter.charAt(0).toUpperCase() + filter.slice(1)}`}
+            onClick={() => onFilterChange(filter)}
+          >
+            {filterLabels[filter]}
+          </a>
+        ))}
       </nav>
 
       <button
